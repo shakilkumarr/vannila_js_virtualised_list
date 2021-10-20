@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtualised</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        html, body {
+            height: 100%;
+            padding: 20px;
+            overflow: hidden;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            overflow: auto;
+            max-height: 100%;
+            box-sizing: content-box;
+        }
+        .list {
+            min-height: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            margin: 2px 0;
+            padding-left: 12px;
+            background-color: bisque;
+        }
+        .empty {
+            background: grey;
+        }
+    </style>
+</head>
+<body>
+    <div class="container"></div>
+    <script>
+        let $container = null;
+        const size = 8;
+        let count = 0;
+        let emptyHeight = 0;
+        let prevHiddenElements = 0;
+        const getInitialHTML = () => {
+            let htmlStr = '<div class="empty"></div>';
+            for (let i = 0; i < size; i += 1)
+                htmlStr += `<div class="list" data-no="${i}">${i}</div>`;
+            return htmlStr;
+        };
+
+        const getHiddenElements = () => Math.floor($container.scrollTop / 80);
+
+        const debounce = (fn, time) => {
+            let timer = null;
+            return () => {
+                clearTimeout(timer);
+                timer = setTimeout(fn, time)
+            }
+        };
+
+        const updateHTML = () => {
+            const hiddenElCount = getHiddenElements();
+            const $childrenList = $container.children;
+            for (let i = 0, j = hiddenElCount; i < size; i += 1) {
+                $childrenList[i + 1].innerHTML = j + i;
+            }
+        };
+
+        const handleScroll = function() {
+            const noOfElementsHidden = getHiddenElements();
+            if (prevHiddenElements === noOfElementsHidden) return;
+            const heightToUpdate = (noOfElementsHidden - prevHiddenElements) * 80;
+            emptyHeight += heightToUpdate;
+            $container.children[0].style.minHeight = `${emptyHeight}px`;
+            $container.scrollTop = emptyHeight;
+            prevHiddenElements = noOfElementsHidden;
+            updateHTML();
+        };
+
+        document.body.onload = function() {
+            $container = document.getElementsByClassName('container')[0];
+            $container.innerHTML = getInitialHTML();
+            $container.addEventListener('scroll', handleScroll);
+        }
+    </script>
+</body>
+</html>
