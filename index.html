@@ -40,7 +40,6 @@
     <script>
         let $container = null;
         const size = 8;
-        let count = 0;
         let emptyHeight = 0;
         let prevHiddenElements = 0;
         const getInitialHTML = () => {
@@ -51,14 +50,6 @@
         };
 
         const getHiddenElements = () => Math.floor($container.scrollTop / 80);
-
-        const debounce = (fn, time) => {
-            let timer = null;
-            return () => {
-                clearTimeout(timer);
-                timer = setTimeout(fn, time)
-            }
-        };
 
         const updateHTML = () => {
             const hiddenElCount = getHiddenElements();
